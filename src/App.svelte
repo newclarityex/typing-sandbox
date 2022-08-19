@@ -1,81 +1,38 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import supabase from "./utils/supabaseClient";
-    import fetchWords from "./utils/fetchWords";
+    import OptionsMenu from "./lib/OptionsMenu.svelte";
+    import TextHandler from "./lib/TextHandler.svelte";
 
-    let completed = [];
-    let upcoming = [];
-    let incorrect = [];
-
-    onMount(async () => {
-        const { data, error } = await fetchWords(supabase, {
-            minLength: 0,
-            maxLength: 10,
-            common: true,
-            limit: 100,
-        });
-        if (error) {
-            console.error(error);
-        }
-        const newUpcoming = [];
-        for (const word of data) {
-            newUpcoming.push(...word.text, " ");
-        }
-        upcoming = newUpcoming;
-
-        window.addEventListener("keydown", (e) => {
-            let key = e.key;
-
-            if (key === "Backspace") {
-                incorrect.pop();
-                incorrect = incorrect;
-                return;
-            }
-
-            let newUpcoming = [...upcoming];
-            let char = newUpcoming.shift();
-
-            if (key !== char && key.length === 1) {
-                incorrect.push(key);
-                incorrect = incorrect;
-            } else {
-                completed.push(char);
-                upcoming = newUpcoming;
-                completed = completed;
-            }
-        });
-    });
+    let options = {
+        type: "frequent" as "random" | "frequent" | "all",
+        spaceRequired: false,
+        minLength: 0,
+        maxLength: 16,
+        limit: {
+            type: "time" as "count" | "time" | "auto",
+            value: 0,
+        },
+    };
 </script>
 
 <main class="h-full w-full">
     <div class="h-full w-full flex flex-col items-center justify-center">
-        <div class="w-1/3 h-24 relative overflow-hidden text-3xl">
-            <div class="text-white absolute left-1/2 upcoming">
-                {#each upcoming as char}
-                    <span class="whitespace-pre">{char}</span>
-                {/each}
-            </div>
-            <div
-                class="text-white absolute right-1/2 completed opacity-50 flex flex-row"
-            >
-                {#each completed as char}
-                    <div>{char}</div>
-                {/each}
-                {#each incorrect as char}
-                    <div class="text-red-500 line-through">{char}</div>
-                {/each}
-            </div>
+        <div class="text-5xl text-white h-1/3 flex flex-col justify-center">
+            Start typing to begin
         </div>
+        <div class="w-full h-1/3 flex flex-col justify-center">
+            <TextHandler {options} />
+        </div>
+        <div class="h-1/3 flex flex-row gap-8 items-center">
+            <button class="text-3xl px-6 py-4 menu-btn"> Reset </button>
+            <button class="text-3xl px-6 py-4 menu-btn"> Options </button>
+        </div>
+        <!-- <OptionsMenu bind:options /> -->
     </div>
 </main>
 
-<style>
-    .upcoming {
-        line-height: 6rem;
-        white-space: pre;
-    }
-    .completed {
-        line-height: 6rem;
-        white-space: pre;
+<style scoped>
+    .menu-btn {
+        color: rgba(255, 255, 255, 1);
+        background-color: rgba(0, 0, 0, 0.5);
     }
 </style>
