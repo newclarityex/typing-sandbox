@@ -241,15 +241,19 @@
                         >
                     {/if}
                 {/each}
-                {#each upcoming as word}
-                    <span class="whitespace-pre">{word}&nbsp;</span>
+                {#each upcoming as word, index}
+                    {#if index < 10}
+                        <span class="whitespace-pre">{word}&nbsp;</span>
+                    {/if}
                 {/each}
             </div>
             <div
                 class="text-right text-white absolute right-1/2 completed opacity-50 flex flex-row"
             >
-                {#each completed as word}
-                    <div class="whitespace-pre">{word}&nbsp;</div>
+                {#each completed as word, index}
+                    {#if index > completed.length - 10}
+                        <div class="whitespace-pre">{word}&nbsp;</div>
+                    {/if}
                 {/each}
                 <div class="whitespace-pre text-green-400">
                     {#each current as char, index}
