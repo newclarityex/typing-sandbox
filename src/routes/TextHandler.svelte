@@ -26,7 +26,10 @@
 
     let completedWords = 0;
     let pastChars = 0;
+    let lastWordCompleted = 0;
     const wordCompleted = async () => {
+        lastWordCompleted = Date.now();
+
         completedWords++;
         pastChars += current.length;
         if (upcoming.length === 0 && options.limit.type === "count") finalize();
@@ -219,6 +222,7 @@
             words={completedWords}
             chars={pastChars + charIndex}
             {lastTyped}
+            {lastWordCompleted}
         />
     </div>
 

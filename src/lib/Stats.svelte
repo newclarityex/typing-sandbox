@@ -7,6 +7,7 @@
     export let finish: null | number;
     export let words: number;
     export let chars: number;
+    export let lastWordCompleted: number;
     export let options;
 
     let timePassed: number;
@@ -28,6 +29,9 @@
         if (!active) {
             remainingTime = 0;
             timePassed = (finish - start) / 1000;
+            if (options.limit.type === "auto") {
+                timePassed = (lastWordCompleted - start) / 1000;
+            }
             clearInterval(updateInterval);
         }
         WPM = (words / timePassed) * 60;
