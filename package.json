@@ -25,6 +25,7 @@
     "autoprefixer": "9",
     "postcss": "7",
     "svelte-portal": "^2.2.0",
+    "svelte-routing": "^1.6.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat"
   }
 }

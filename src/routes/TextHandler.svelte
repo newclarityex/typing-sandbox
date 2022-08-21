@@ -2,7 +2,8 @@
     import { onMount, onDestroy } from "svelte";
     import supabase from "../utils/supabaseClient";
     import fetchWords from "../utils/fetchWords";
-    import Stats from "./Stats.svelte";
+    import Stats from "../lib/Stats.svelte";
+    import { Link } from "svelte-routing";
 
     export let options;
 
@@ -13,12 +14,12 @@
 
     let charIndex = 0;
 
+    let active = false;
     let start = null as null | number;
     let finish = null as null | number;
 
     const finalize = () => {
-        console.log("finalize");
-
+        active = false;
         finish = Date.now();
         window.removeEventListener("keydown", handleKeyDown);
     };
@@ -68,6 +69,7 @@
         current = [];
         incorrect = [];
         charIndex = 0;
+        completedWords = 0;
 
         // Generate or fetch data
         if (options.type === "random") {
@@ -115,16 +117,19 @@
         }, options.limit.value * 1000);
     };
 
+    let lastTyped = Date.now();
     let autoTimeout = null as number | null;
     const resetAutoTimer = () => {
         clearTimeout(autoTimeout);
+        lastTyped = Date.now();
         autoTimeout = window.setTimeout(() => {
             finalize();
-        });
+        }, options.limit.value * 1000);
     };
 
     const beginTyping = () => {
         start = Date.now();
+        active = true;
         if (options.limit.type === "time") countdownTimer();
         if (options.limit.type === "auto") resetAutoTimer();
     };
@@ -155,6 +160,7 @@
 
         if (key === " ") {
             e.preventDefault();
+
             if (charIndex === current.length) {
                 if (options.limit.type === "auto") resetAutoTimer();
                 wordCompleted();
@@ -192,6 +198,8 @@
         }
     }
 
+    export let location = "";
+
     onMount(async () => {
         initialize();
     });
@@ -201,25 +209,30 @@
     });
 </script>
 
-<div class="h-full w-full flex flex-col items-center justify-center">
+<div class="absolute h-full w-full flex flex-col items-center justify-center">
     <div class="relative w-full h-1/3">
         <Stats
+            {active}
             {start}
             {finish}
-            limit={options.limit}
+            {options}
             words={completedWords}
             chars={pastChars + charIndex}
+            {lastTyped}
         />
     </div>
 
     <div class="w-full h-1/3 flex flex-col justify-center">
-        <div class="block relative w-full h-11 overflow-hidden text-4xl">
+        <div
+            class="block relative w-full h-11 overflow-hidden text-4xl transition-opacity"
+            class:opacity-0={upcoming.length === 0 && completed.length === 0}
+        >
             <div class="text-white absolute left-1/2 upcoming">
                 {#each current as char, index}
                     {#if index >= charIndex}
                         <span
                             class={`whitespace-pre ${
-                                start === null ? "" : "text-green-400"
+                                active ? "text-green-400" : ""
                             }`}>{char}</span
                         >
                     {/if}
@@ -253,7 +266,9 @@
         <button class="text-3xl px-6 py-4 menu-btn" on:click={initialize}>
             Reset
         </button>
-        <button class="text-3xl px-6 py-4 menu-btn"> Options </button>
+        <Link to="options">
+            <span class="text-3xl px-6 py-4 menu-btn"> Options </span>
+        </Link>
     </div>
 </div>
 

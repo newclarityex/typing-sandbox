@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { element } from "svelte/internal";
+    import { Link } from "svelte-routing";
 
     export let options;
 
@@ -7,10 +7,16 @@
     const maxFreqLen = 16;
     const minLen = 0;
     const maxLen = 31;
+
+    export let location = "";
 </script>
 
-<div class="h-40 flex flex-row gap-24">
-    <div class="column">
+<div
+    class="absolute w-full h-full flex flex-col items-center justify-center gap-24"
+>
+    <h1 class="text-white text-4xl">Options</h1>
+    <div class="flex flex-col items-center justify-center gap-12">
+        <h2 class="text-white text-3xl">Text Options</h2>
         <div class="text-white text-2xl flex flex-col items-center gap-4">
             <label for="text-type">Text Type</label>
             <select
@@ -23,19 +29,21 @@
                 <option value="random">Random</option>
             </select>
         </div>
-        <br />
-        {#if options.type !== "random"}
-            <div class="text-white text-2xl flex flex-col items-center gap-6">
-                <label for="require-space">Require Spacebar</label>
-                <input
-                    name="require-space"
-                    type="checkbox"
-                    bind:checked={options.spaceRequired}
-                />
-            </div>
-        {/if}
+        <div
+            class="text-white text-2xl flex flex-col items-center gap-6"
+            class:opacity-50={options.type === "random"}
+            class:pointer-events-none={options.type === "random"}
+        >
+            <label for="require-space">Require Spacebar</label>
+            <input
+                name="require-space"
+                type="checkbox"
+                bind:checked={options.spaceRequired}
+            />
+        </div>
     </div>
-    <div class="column">
+    <div class="flex flex-col items-center justify-center gap-12">
+        <h2 class="text-white text-3xl">Time Options</h2>
         <div class="text-white text-2xl flex flex-col items-center gap-4">
             <label for="text-type">Limit Type</label>
             <select
@@ -48,8 +56,6 @@
                 <option value="time">Duration</option>
             </select>
         </div>
-        <br />
-        <br />
         <div class="text-white text-2xl">
             Stop after <input
                 name="require-space"
@@ -71,13 +77,16 @@
             {/if}
         </div>
     </div>
+    <Link to="/">
+        <span class="text-3xl px-6 py-4 menu-btn"> Back </span>
+    </Link>
 </div>
 
 <style scoped>
-    .column {
-        width: 500px;
+    .menu-btn {
+        color: rgba(255, 255, 255, 1);
+        background-color: rgba(0, 0, 0, 0.5);
     }
-
     select,
     input {
         background: rgba(0, 0, 0, 0.5);
