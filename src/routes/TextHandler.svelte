@@ -41,19 +41,25 @@
         charIndex = 0;
 
         if (options.limit.type !== "count") {
-            const { data, error } = await fetchWords(supabase, {
-                minLength: 0,
-                maxLength: options.maxLength,
-                common: options.type === "frequent",
-                limit: 100,
-            });
+            if (options.type !== "random") {
+                const { data, error } = await fetchWords(supabase, {
+                    minLength: 0,
+                    maxLength: options.maxLength,
+                    common: options.type === "frequent",
+                    limit: 100,
+                });
 
-            if (error) {
-                console.error(error);
-            }
+                if (error) {
+                    console.error(error);
+                }
 
-            for (const word of data) {
-                upcoming = [...upcoming, word.text];
+                for (const word of data) {
+                    upcoming = [...upcoming, word.text];
+                }
+            } else {
+                for (let i = 0; i < 100; i++) {
+                    upcoming.push(randomLetter());
+                }
             }
         }
     };
@@ -242,7 +248,7 @@
                     {/if}
                 {/each}
                 {#each upcoming as word, index}
-                    {#if index < 10}
+                    {#if index < 10 || (options.type === "random" && index < 100)}
                         <span class="whitespace-pre">{word}&nbsp;</span>
                     {/if}
                 {/each}
@@ -251,7 +257,7 @@
                 class="text-right text-white absolute right-1/2 completed opacity-50 flex flex-row"
             >
                 {#each completed as word, index}
-                    {#if index > completed.length - 10}
+                    {#if index > completed.length - 10 || (options.type === "random" && index > completed.length - 100)}
                         <div class="whitespace-pre">{word}&nbsp;</div>
                     {/if}
                 {/each}

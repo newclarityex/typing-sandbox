@@ -83,9 +83,11 @@
             </div>
         {/if}
         <div class="flex flex-row items-center justify-center gap-8">
-            <div class="text-4xl">
-                {(WPM || 0).toFixed(2)} WPM
-            </div>
+            {#if options.type !== "random"}
+                <div class="text-4xl">
+                    {(WPM || 0).toFixed(2)} WPM
+                </div>
+            {/if}
             <div class="text-4xl">
                 {(KPS || 0).toFixed(2)} KPS
             </div>
