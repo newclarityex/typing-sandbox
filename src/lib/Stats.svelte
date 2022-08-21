@@ -28,6 +28,7 @@
         autoRemaining = options.limit.value - (Date.now() - lastTyped) / 1000;
         if (!active) {
             remainingTime = 0;
+            autoRemaining = 0;
             timePassed = (finish - start) / 1000;
             if (options.limit.type === "auto") {
                 timePassed = (lastWordCompleted - start) / 1000;
